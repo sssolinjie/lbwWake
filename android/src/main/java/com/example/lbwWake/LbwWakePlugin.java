@@ -1,16 +1,18 @@
 package com.example.lbwWake;
 
+import android.Manifest;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
-
 import com.baidu.speech.asr.SpeechConstant;
 import com.example.lbwWake.mini.MiniRecog;
 import com.example.lbwWake.wakeup.IWakeupListener;
 import com.example.lbwWake.wakeup.Mywakeup;
 import com.example.lbwWake.wakeup.SimpleWakeupListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +36,7 @@ public class LbwWakePlugin implements FlutterPlugin, MethodCallHandler {
 
   protected Mywakeup myWakeup;
   protected MiniRecog recog;
+
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -65,6 +68,8 @@ public class LbwWakePlugin implements FlutterPlugin, MethodCallHandler {
       initSDK(params);
     }else if (call.method.equals("startspeak")) {
       startspeak();
+    }else if (call.method.equals("stopspeak")) {
+      stopspeak();
     }else {
       result.notImplemented();
     }
@@ -94,5 +99,8 @@ public class LbwWakePlugin implements FlutterPlugin, MethodCallHandler {
 
   void startspeak(){
     recog.start();
+  }
+  void stopspeak(){
+    recog.stop();
   }
 }

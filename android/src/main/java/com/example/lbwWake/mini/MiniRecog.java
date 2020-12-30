@@ -27,8 +27,10 @@ public class MiniRecog implements EventListener {
     public Context context;
     private final MethodChannel channel;
     protected BaiduConfig config;
+    private boolean isstart;
     public MiniRecog(Context ct, MethodChannel listener, BaiduConfig c){
         context = ct;
+        isstart = false;
         this.config = c;
         this.channel = listener;
         asr = EventManagerFactory.create(context, "asr");
@@ -36,6 +38,7 @@ public class MiniRecog implements EventListener {
 
     }
     public void start(){
+        isstart = true;
         Map<String, Object> params = new HashMap<String, Object>();
         String event = null;
         event = SpeechConstant.ASR_START;
@@ -74,29 +77,44 @@ public class MiniRecog implements EventListener {
                     String st = jsonObj.getString("best_result");
                     channel.invokeMethod("temporary", st);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+
                 }
             }  else if (params.contains("\"final_result\""))  {
                 // 一句话的最终识别结果
                 logTxt += ", 最终识别结果：" + params;
+                isstart = false;
                 try {
                     JSONObject jsonObj = new JSONObject(params);
                     String st = jsonObj.getString("best_result");
                     channel.invokeMethod("end", st);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+
                 }
+                stop();
             }  else {
                 // 一般这里不会运行
                 logTxt += " ;params :" + params;
                 if (data != null) {
                     logTxt += " ;data length=" + data.length;
                 }
+               // Log.d("lbw111-->", logTxt);
             }
         }else {
             // 识别开始，结束，音量，音频数据回调
             if (params != null && !params.isEmpty()){
                 logTxt += " ;params :" + params;
+                if(isstart == false) return;
+                if(name == "asr.finish"){
+                    try {
+                        JSONObject jsonObj = new JSONObject(params);
+                        int st = jsonObj.getInt("error");
+                        if(st != 0 && st!= 8) {
+                            channel.invokeMethod("error", String.valueOf(st));
+                        }
+                    } catch (JSONException e) {
+
+                    }
+                }
             }
             if (data != null) {
                 logTxt += " ;data length=" + data.length;

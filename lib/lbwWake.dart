@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-12-28 10:36:47
- * @LastEditTime: 2020-12-29 11:29:37
+ * @LastEditTime: 2020-12-29 16:51:14
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /example/Users/imacmini/ParentNode/Flutter/Package/lbwWake/lib/lbwWake.dart
@@ -15,6 +15,8 @@ class LbwWake {
 
   //自定义几个关键字 来区分android端口传来的参数
   static const List<String> enumeration = ["wake", "temporary", "end"];
+
+  static List<Function> callbackList = [];
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
@@ -34,9 +36,16 @@ class LbwWake {
     await _channel.invokeMethod("startspeak", "");
   }
 
+  static Future<void> stopspeak() async {
+    await _channel.invokeMethod("stopspeak", "");
+  }
+
   static void addListen(Function callback) {
+    callbackList.add(callback);
     _channel.setMethodCallHandler((call) {
-      callback(call.method, call.arguments);
+      for (int i = 0; i < callbackList.length; ++i) {
+        callbackList[i](call.method, call.arguments);
+      }
     });
   }
 }
