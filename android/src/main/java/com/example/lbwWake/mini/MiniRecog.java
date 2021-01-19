@@ -104,11 +104,12 @@ public class MiniRecog implements EventListener {
             if (params != null && !params.isEmpty()){
                 logTxt += " ;params :" + params;
                 if(isstart == false) return;
+                //Log.d("lbw111-->", logTxt);
                 if(name == "asr.finish"){
                     try {
                         JSONObject jsonObj = new JSONObject(params);
                         int st = jsonObj.getInt("error");
-                        if(st != 0 && st!= 8) {
+                        if(st != 0) {
                             channel.invokeMethod("error", String.valueOf(st));
                         }
                     } catch (JSONException e) {

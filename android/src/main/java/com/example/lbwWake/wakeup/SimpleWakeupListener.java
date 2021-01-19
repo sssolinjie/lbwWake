@@ -34,6 +34,6 @@ public class SimpleWakeupListener implements IWakeupListener{
 
     @Override
     public void onASrAudio(byte[] data, int offset, int length) {
-        MyLogger.error(TAG, "audio data： " + data.length);
+       // MyLogger.error(TAG, "audio data： " + data.length);
     }
 }
